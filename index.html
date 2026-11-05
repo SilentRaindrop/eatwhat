@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f6f7f2" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>今天吃什么</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css?v=7" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">食</div>
+      <div><p class="eyebrow">MEAL PLANNER</p><h1>今天吃什么</h1></div>
+      <button class="icon-btn" id="managerOpen" aria-label="菜品管理" title="菜品管理">☷</button>
+    </header>
+
+    <section class="welcome">
+      <div>
+        <p class="welcome-date" id="todayDate"></p>
+        <h2>你好呀，<br />今天想吃些什么？</h2>
+        <p class="welcome-copy">慢慢挑，今天的好味道由你决定。</p>
+      </div>
+      <div class="bowl-art" aria-hidden="true"><span>🥗</span><i></i></div>
+    </section>
+
+    <section class="quick-actions" aria-label="快捷操作">
+      <button class="action-tile random-tile" id="randomOpen"><span class="action-icon">⤨</span><span><b>帮我随机选</b><small>让今天交给好运气</small></span><span class="tile-arrow">›</span></button>
+      <button class="action-tile add-tile" id="managerOpen2"><span class="action-icon">☷</span><span><b>菜品管理</b><small>添加、下架或删除</small></span><span class="tile-arrow">›</span></button>
+    </section>
+
+    <section class="menu-heading"><div><p class="eyebrow">YOUR MENU</p><h2>挑选今天的菜</h2></div><span id="dishCount" class="count-label"></span></section>
+    <nav class="category-tabs" id="categoryTabs" aria-label="菜品分类"></nav>
+    <section id="dishList" class="dish-list" aria-live="polite"></section>
+    <div class="empty-state hidden" id="emptyState"><span>🍽️</span><h3>这里还没有菜</h3><p>添加几道喜欢的菜，开始安排今天的菜单。</p><button class="text-action" id="emptyAdd">＋ 管理菜品</button></div>
+
+    <div class="bottom-spacer"></div>
+    <footer class="selection-bar" id="selectionBar">
+      <div class="selection-summary"><span class="basket-icon">☷</span><span><b id="selectionCount">备选 0 道</b><small>选好后生成今日菜单</small></span></div>
+      <button class="primary-btn" id="confirmSelection" disabled>确认菜单 <span>→</span></button>
+    </footer>
+  </main>
+
+  <dialog id="managerDialog" class="sheet-dialog">
+    <div class="sheet-content"><div class="sheet-handle"></div><div class="sheet-title"><div><p class="eyebrow">YOUR DISHES</p><h2>菜品管理</h2></div><button type="button" class="close-btn" data-close="managerDialog" aria-label="关闭">×</button></div>
+      <button class="primary-btn full-btn manager-add" id="managerAdd">＋ 添加一道菜</button>
+      <div class="manager-tabs"><button class="manager-tab active" data-manager-tab="active">在售菜品</button><button class="manager-tab" data-manager-tab="inactive">已下架</button></div>
+      <p class="storage-note" id="storageStatus">菜品和图片保存在这台设备的浏览器中</p><div id="managerList" class="manager-list"></div>
+    </div>
+  </dialog>
+
+  <dialog id="addDialog" class="sheet-dialog">
+    <form id="dishForm" class="sheet-content">
+      <div class="sheet-handle"></div><div class="sheet-title"><div><p class="eyebrow">ADD TO YOUR MENU</p><h2>添加一道菜</h2></div><button type="button" class="close-btn" data-close="addDialog" aria-label="关闭">×</button></div>
+      <label class="photo-picker" for="dishImage"><span class="photo-preview" id="photoPreview">＋</span><span><b>添加菜品图片</b><small>可选，没有图片也没关系</small></span><span class="upload-arrow">›</span><input id="dishImage" type="file" accept="image/*" hidden /></label>
+      <label class="field-label">菜品名称 <i>*</i><input id="dishName" required maxlength="24" placeholder="比如：香煎鸡胸肉" /></label>
+      <label class="field-label">菜品类型<select id="dishCategory"><option>荤菜</option><option>素菜</option><option>减脂</option><option>主食</option><option>其他</option></select></label>
+      <label class="field-label">备注 <span>选填</span><textarea id="dishNote" maxlength="80" rows="2" placeholder="比如：少油，配柠檬汁"></textarea></label>
+      <button class="primary-btn full-btn" type="submit">保存这道菜</button>
+    </form>
+  </dialog>
+
+  <dialog id="randomDialog" class="sheet-dialog">
+    <div class="sheet-content"><div class="sheet-handle"></div><div class="sheet-title"><div><p class="eyebrow">LET FATE DECIDE</p><h2>随机挑几道</h2></div><button class="close-btn" data-close="randomDialog" aria-label="关闭">×</button></div>
+      <p class="section-caption">从哪些类型里挑？</p><div class="choice-chips" id="randomCategories"></div>
+      <p class="section-caption count-caption">想选几道？</p><div class="stepper"><button id="countMinus" aria-label="减少">−</button><strong id="randomCount">2</strong><button id="countPlus" aria-label="增加">＋</button><small id="randomCountLabel">道菜（总数）</small></div>
+      <div id="randomResult" class="random-result hidden"></div>
+      <button class="primary-btn full-btn" id="drawButton">帮我挑一挑 <span>⤨</span></button>
+      <div class="random-actions hidden" id="randomActions"><button class="secondary-btn" id="redrawButton">重新筛选 <span>⤨</span></button><button class="primary-btn" id="confirmRandom">就吃这些</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="todayDialog" class="sheet-dialog menu-dialog">
+    <div class="sheet-content"><div class="sheet-handle"></div><div class="sheet-title"><div><p class="eyebrow">TODAY'S MENU</p><h2>今天就吃这些</h2></div><button class="close-btn" data-close="todayDialog" aria-label="关闭">×</button></div>
+      <div class="today-date-card"><span>今日菜单</span><b id="menuDate"></b></div><div id="todayDishes" class="today-dishes"></div><button class="secondary-btn full-btn" data-close="todayDialog">完成</button>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js?v=7"></script>
+</body>
+</html>
